@@ -12,5 +12,5 @@ window.EDUC_CONFIG = {
   // false = les trois niveaux sont ouverts dès le début ; true = Difficile et Pro s'ouvrent après 200 réponses du niveau précédent
   VERROUILLER_NIVEAUX: false,
 
-  ALLOWED_HOSTS: ['manassentambwa99-ui.github.io']
+  ALLOWED_HOSTS: ['manassentambwa99-ui.github.io', 'mnl-42.github.io']
 };
