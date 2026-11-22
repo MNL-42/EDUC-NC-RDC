@@ -41,9 +41,9 @@
         if(!usable.length)throw new Error('Aucune photographie disponible');
         note.textContent='Images publiques — sources et crédits consultables sur Wikimedia Commons.';
         usable.forEach(function(p){
-          var ii=p.imageinfo[0],src=ii.thumburl||ii.url,meta=ii.extmetadata||{},credit=(meta.Artist&&meta.Artist.value||meta.Credit&&meta.Credit.value||'Wikimedia Commons').replace(/<[^>]*>/g,'').slice(0,100);
+          var ii=p.imageinfo[0],src=ii.thumburl||ii.url,meta=ii.extmetadata||{},credit=(meta.Artist&&meta.Artist.value||meta.Credit&&meta.Credit.value||'Wikimedia Commons').replace(/<[^>]*>/g,'').slice(0,80),lic=(meta.LicenseShortName&&meta.LicenseShortName.value)||'Licence à consulter';
           var item=el('article','educ-photo'),img=document.createElement('img');img.src=src;img.alt=p.title.replace(/^File:/,'');img.loading='lazy';img.referrerPolicy='no-referrer';item.appendChild(img);
-          var a=el('a','',p.title.replace(/^File:/,'').slice(0,52));a.href='https://commons.wikimedia.org/wiki/'+encodeURIComponent(p.title.replace(/ /g,'_'));a.target='_blank';a.rel='noopener';item.appendChild(a);item.appendChild(el('small','',credit));grid.appendChild(item);
+          var a=el('a','',p.title.replace(/^File:/,'').slice(0,52));a.href='https://commons.wikimedia.org/wiki/'+encodeURIComponent(p.title.replace(/ /g,'_'));a.target='_blank';a.rel='noopener';item.appendChild(a);item.appendChild(el('small','',credit+' · '+lic));grid.appendChild(item);
         });
       }).catch(function(){note.textContent='La galerie nécessite une connexion Internet. Réessayez plus tard.';loaded=false;});
     }
