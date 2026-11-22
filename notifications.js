@@ -27,7 +27,19 @@
     try { localStorage.setItem(KEY, JSON.stringify({ on: false, h: 18 })); } catch (e) {}
     if ('serviceWorker' in navigator) navigator.serviceWorker.ready.then(function (reg) { if (reg.active) reg.active.postMessage({ type: 'REMINDER_SETTINGS', on: false, h: 18 }); }).catch(function () {});
   };
+  function rappelSecours() {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    var s=settings(); if(!s.on || new Date().getHours() < (Number(s.h)||18)) return;
+    var last=0; try{last=Number(localStorage.getItem('educ_rappel_last_fallback')||0);}catch(e){}
+    if(Date.now()-last < 12*60*60*1000) return;
+    envoyer(); try{localStorage.setItem('educ_rappel_last_fallback',String(Date.now()));}catch(e){}
+  }
   window.addEventListener('load', function () {
-    if ('Notification' in window && Notification.permission === 'granted') window.educPlanifierRappels();
+    if ('Notification' in window && Notification.permission === 'granted') {
+      window.educPlanifierRappels();
+      rappelSecours();
+      setInterval(rappelSecours, 30*60*1000);
+    }
   });
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)rappelSecours();});
 })();
