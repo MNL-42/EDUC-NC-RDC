@@ -49,11 +49,33 @@
     }
     load(false);
   }
+  function addBackupControls() {
+    var tab=document.getElementById('tab-profil');if(!tab||document.getElementById('educ-backup-tools'))return;
+    var card=el('section','educ-extra');card.id='educ-backup-tools';card.appendChild(el('h3','','Sauvegarde de mes données'));
+    card.appendChild(el('p','','Exportez vos informations et votre progression pour les conserver. Le fichier peut contenir vos données de profil : gardez-le dans un endroit privé.'));
+    var row=el('div','');row.style.cssText='display:flex;gap:8px;flex-wrap:wrap';
+    var out=el('button','educ-extra-btn','Exporter ma sauvegarde');out.type='button';
+    out.addEventListener('click',function(){
+      var data={format:'EDUC-NATIONAL-BACKUP',version:1,createdAt:new Date().toISOString(),items:{}};
+      try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&(/^(educ_|facile_|difficile_|pro_)/.test(k))){data.items[k]=localStorage.getItem(k);}}}catch(e){alert('Impossible de lire les données locales.');return;}
+      var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='EDUC-National-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+    });
+    var input=document.createElement('input');input.type='file';input.accept='application/json,.json';input.hidden=true;
+    var imp=el('button','educ-extra-btn','Restaurer une sauvegarde');imp.type='button';imp.style.background='#475569';imp.addEventListener('click',function(){input.click();});
+    input.addEventListener('change',function(){var file=input.files&&input.files[0];if(!file)return;if(file.size>2*1024*1024){alert('Fichier trop volumineux (maximum 2 Mo).');input.value='';return;}
+      var reader=new FileReader();reader.onload=function(){try{var d=JSON.parse(reader.result);if(d.format!=='EDUC-NATIONAL-BACKUP'||!d.items||typeof d.items!=='object')throw new Error('Format invalide');
+        if(!confirm('Restaurer cette sauvegarde ? Les données EDUC locales portant les mêmes clés seront remplacées.'))return;
+        Object.keys(d.items).forEach(function(k){if(/^(educ_|facile_|difficile_|pro_)/.test(k)&&typeof d.items[k]==='string')localStorage.setItem(k,d.items[k]);});
+        alert('Sauvegarde restaurée. L’application va redémarrer.');location.reload();
+      }catch(e){alert('Sauvegarde invalide ou illisible.');}finally{input.value='';}};reader.readAsText(file);});
+    row.appendChild(out);row.appendChild(imp);card.appendChild(row);card.appendChild(input);tab.appendChild(card);
+  }
   function addProvinceQuickInfo() {
     var card=document.getElementById('educ-rdc-gallery');if(!card||document.getElementById('educ-provinces-note'))return;
     var p=el('p','');p.id='educ-provinces-note';p.style.marginTop='10px';p.textContent='Couverture géographique : '+PROVINCES.length+' provinces de la RDC. Les fiches détaillées pourront être enrichies avec des données vérifiées.';card.appendChild(p);
   }
-  function init(){addProgress();addLibrary();addGallery();addProvinceQuickInfo();}
+  function init(){addProgress();addLibrary();addGallery();addProvinceQuickInfo();addBackupControls();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
   window.addEventListener('educ-pret',init);
   setTimeout(init,1200);
