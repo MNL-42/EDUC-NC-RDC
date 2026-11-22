@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <mera charset="UTF-8">
+    <meta charset="UTF-8">
     <script>window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__dp = e; });</script>
     <script>
       /* Garde-fou : si l'écran du logo reste bloqué, on ouvre l'application quand même */
@@ -31,6 +31,7 @@
     </script>
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; connect-src 'self' https://commons.wikimedia.org https://newsdata.io https://serpapi.com https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="config.js"></script>
     <script src="security.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -2158,6 +2159,7 @@
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
                     alert("Super ! Les notifications de rappel pour la Nouvelle Citoyenneté et l'étude sont activées.");
+                    if (window.educPlanifierRappels) window.educPlanifierRappels();
                     envoyerNotificationInstantanee("EDUC National", "Bien joué ! Vos rappels d'étude sont désormais configurés.");
                 } else {
                     alert("Les notifications ont été refusées. Vous pouvez les réactiver dans les paramètres de votre navigateur.");
@@ -2386,7 +2388,7 @@
             d.style.setProperty('--dx', Math.round(-60 + Math.random() * 120) + 'px'); app.appendChild(d);
           }
         } catch (e) {}
-        ['questions-facile.js', 'questions-difficile.js', 'questions-pro.js', 'quiz.js', 'news.js', 'notifications.js', 'search.js', 'savoirs.js', 'scenes.js', 'patriote.js', 'quotidien.js', 'brevet.js', 'carte.js'].forEach(function (src) {
+        ['questions-facile.js', 'questions-difficile.js', 'questions-pro.js', 'quiz.js', 'news.js', 'notifications.js', 'search.js', 'savoirs.js', 'scenes.js', 'patriote.js', 'quotidien.js', 'brevet.js', 'carte.js', 'enhancements.js'].forEach(function (src) {
           var el = document.createElement('script'); el.src = src; el.async = false; document.body.appendChild(el);
         });
       })();

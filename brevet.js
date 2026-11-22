@@ -155,9 +155,19 @@
       c.textAlign = 'left'; c.fillStyle = '#334155'; c.font = '700 40px ' + SANS; c.fillText('Date : ' + (opts.apercu ? '— — — —' : (opts.date || '')), 330, 1400); c.fillStyle = '#64748b'; c.font = '600 34px ' + SANS; c.fillText('N° ' + (opts.apercu ? 'PAT-0000-000000' : (opts.numero || '')), 330, 1450);
       c.fillStyle = '#64748b'; c.font = 'italic 34px ' + SERIF; c.fillText(t.titre, 330, 1496);
       // bas droite : signature
-      c.textAlign = 'center'; c.fillStyle = '#12202f'; c.font = 'italic 800 78px ' + SERIF; c.fillText('Manassé IA', W - 650, 1400);
-      c.strokeStyle = t.c3; c.lineWidth = 3; c.beginPath(); c.moveTo(W - 920, 1418); c.lineTo(W - 380, 1418); c.stroke(); c.fillStyle = '#475569'; c.font = '600 32px ' + SANS; c.fillText('Application EDUC National', W - 650, 1458);
-      c.font = 'italic 34px ' + SERIF; c.fillStyle = '#64748b'; c.fillText('Justice – Paix – Travail', W - 650, 1498);
+      c.textAlign = 'center'; c.fillStyle = '#12202f'; c.font = '700 34px ' + SANS; c.fillText('Référence pédagogique', W - 650, 1385);
+      c.strokeStyle = t.c3; c.lineWidth = 3; c.beginPath(); c.moveTo(W - 1020, 1405); c.lineTo(W - 280, 1405); c.stroke(); c.fillStyle = '#475569'; c.font = '600 29px ' + SANS; c.fillText("Ministère de l'Éducation nationale", W - 650, 1442); c.fillText('et Nouvelle Citoyenneté', W - 650, 1478);
+      c.font = '600 22px ' + SANS; c.fillStyle = '#64748b'; c.fillText('Attestation interne EDUC National · non officielle', W - 650, 1510);
+      /* QR de référence : il ouvre une page informative, sans prétendre certifier officiellement le document. */
+      if (!opts.apercu && opts.numero && window.QRCode) {
+        try {
+          var qbox = document.createElement('div');
+          var qurl = new URL('verification.html?ref=' + encodeURIComponent(opts.numero), window.location.href).href;
+          new QRCode(qbox, { text: qurl, width: 190, height: 190, colorDark: '#102a43', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+          var qcv = qbox.querySelector('canvas');
+          if (qcv) { c.save(); c.fillStyle = '#fff'; c.fillRect(W - 310, 255, 220, 250); c.drawImage(qcv, W - 295, 270, 190, 190); c.fillStyle = '#334155'; c.font = '700 20px ' + SANS; c.textAlign = 'center'; c.fillText('Référence QR', W - 200, 485); c.restore(); }
+        } catch (qrErr) { console.warn('QR de référence indisponible', qrErr); }
+      }
       // reflet holographique sur le cadre
       c.save(); c.globalCompositeOperation = 'soft-light'; var hg = c.createLinearGradient(0, 0, W, H); ['rgba(255,0,128,.55)', 'rgba(255,200,0,.5)', 'rgba(0,255,200,.5)', 'rgba(0,128,255,.55)', 'rgba(200,0,255,.5)', 'rgba(255,0,128,.55)'].forEach(function (col, i) { hg.addColorStop(i / 5, col); });
       c.lineWidth = 120; c.strokeStyle = hg; c.strokeRect(120, 120, W - 240, H - 240); c.restore();
