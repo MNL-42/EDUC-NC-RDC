@@ -8,7 +8,7 @@ const CACHE_META = 'educ-meta'; // réglages des rappels (conservés entre les v
 // Tout ce qu'il faut pour OUVRIR l'application sans Internet
 const PRECACHE = [
   './', 'index.html', 'offline.html', 'manifest.json', 'manifest-v2.json', 'verification.html',
-  'config.js', 'security.js', 'quiz.js', 'news.js', 'notifications.js', 'search.js', 'enhancements.js', 'savoirs.js', 'scenes.js', 'patriote.js', 'quotidien.js', 'brevet.js', 'carte.js', 'Dossiers-Patriotiques-RDC.pdf',
+  'config.js', 'security.js', 'quiz.js', 'news.js', 'notifications.js', 'search.js', 'enhancements.js', 'savoirs.js', 'scenes.js', 'patriote.js', 'quotidien.js', 'brevet.js', 'carte.js',
   'questions-facile.js', 'questions-difficile.js', 'questions-pro.js',
   'logoo.png', 'histoire.png', 'Président.png', 'première_ ministre.png', 'ministre.png', 'sec.png', 'directeur.png',
   '1.png', '2.png', '3.png', '4.png',
