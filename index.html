@@ -2159,6 +2159,7 @@
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
                     alert("Super ! Les notifications de rappel pour la Nouvelle Citoyenneté et l'étude sont activées.");
+                    if (window.educPlanifierRappels) window.educPlanifierRappels();
                     envoyerNotificationInstantanee("EDUC National", "Bien joué ! Vos rappels d'étude sont désormais configurés.");
                 } else {
                     alert("Les notifications ont été refusées. Vous pouvez les réactiver dans les paramètres de votre navigateur.");
