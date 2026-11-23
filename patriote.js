@@ -472,7 +472,7 @@
       if (s.serment) { var bc = el('button', 'esp-btn', '⬇ Télécharger / partager mon certificat'); bc.addEventListener('click', certificat); c6.appendChild(bc); }
       b.appendChild(c6);
       // galerie
-      var c7 = el('div', 'esp-card'); c7.appendChild(el('h3', '', '📸 Le Congo en images (en direct)')); var gal = el('div', 'esp-gal'); c7.appendChild(gal); var gc = el('p', '', 'Chargement des photos…'); gc.style.fontSize = '.8rem'; c7.appendChild(gc); b.appendChild(c7);
+      var c7 = el('div', 'esp-card'); c7.appendChild(el('h3', '', '📸 Le Congo en images')); c7.appendChild(el('p', '', 'Découvre les paysages, les villes, les parcs et le patrimoine de la RDC.')); var gal = el('div', 'esp-gal'); c7.appendChild(gal); var gc = el('p', '', 'Chargement des photographies…'); gc.style.fontSize = '.8rem'; c7.appendChild(gc); var reload = el('button', 'esp-btn', '↻ Actualiser les photos'); reload.type='button'; reload.addEventListener('click', function(){ gc.textContent='Recherche de nouvelles photographies…'; galerie(gal,gc,true); }); c7.appendChild(reload); b.appendChild(c7);
       galerie(gal, gc);
       esp.appendChild(b); esp.classList.add('on'); esp.scrollTop = 0; document.body.style.overflow = 'hidden';
       try { history.pushState({ esp: 1 }, ''); } catch (e) {}
@@ -511,18 +511,20 @@
       gal.innerHTML = ''; items.forEach(function (it) { var f = el('figure'), im = document.createElement('img'); im.src = it.u; im.alt = it.t; im.loading = 'lazy'; im.referrerPolicy = 'no-referrer'; f.appendChild(im); f.appendChild(el('figcaption', '', it.t + ' · Photo : ' + it.a + ' · ' + it.l + ' · Wikimedia Commons')); gal.appendChild(f); });
       gc.textContent = 'Photos libres de droits, différentes à chaque visite.';
     }
-    function galerie(gal, gc) {
+    function galerie(gal, gc, force) {
       var cache = null; try { cache = JSON.parse(localStorage.getItem('educ_gal2') || 'null'); } catch (e) {}
+      if (!force && cache && cache.items && cache.items.length) afficherGal(gal, gc, cache.items);
       var q = THEMES[Math.floor(Math.random() * THEMES.length)];
-      var url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=' + encodeURIComponent(q + ' filetype:bitmap') + '&gsrnamespace=6&gsrlimit=14&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=500&format=json&origin=*';
-      if (!navigator.onLine) { if (cache && cache.items) afficherGal(gal, gc, cache.items); else gc.textContent = 'Connecte-toi à Internet pour voir les photos.'; return; }
-      fetch(url).then(function (r) { return r.json(); }).then(function (j) {
+      var url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=' + encodeURIComponent(q) + '&gsrnamespace=6&gsrlimit=30&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=640&format=json&origin=*';
+      if (!navigator.onLine) { if (cache && cache.items && cache.items.length) afficherGal(gal, gc, cache.items); else gc.textContent = 'Connecte-toi à Internet pour charger les photos de la RDC.'; return; }
+      fetch(url, {mode:'cors',credentials:'omit'}).then(function (r) { if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(function (j) {
         var pages = j.query && j.query.pages ? Object.keys(j.query.pages).map(function (k) { return j.query.pages[k]; }) : [], items = [];
-        pages.forEach(function (p) { var ii = p.imageinfo && p.imageinfo[0]; if (!ii || !ii.thumburl || !/\.(jpe?g|png)$/i.test(ii.url)) return; var m = ii.extmetadata || {};
-          items.push({ u: ii.thumburl, t: nettoie(p.title.replace(/^File:/, '').replace(/\.[a-z]+$/i, '')) || q, a: nettoie(m.Artist && m.Artist.value) || 'auteur', l: nettoie(m.LicenseShortName && m.LicenseShortName.value) || 'licence libre' }); });
-        items = items.sort(function () { return Math.random() - .5; }).slice(0, 6); if (!items.length) throw new Error('vide');
-        try { localStorage.setItem('educ_gal2', JSON.stringify({ items: items })); } catch (e) {} afficherGal(gal, gc, items);
-      }).catch(function () { if (cache && cache.items) afficherGal(gal, gc, cache.items); else gc.textContent = 'Les photos ne sont pas disponibles pour le moment.'; });
+        pages.forEach(function (p) { var ii = p.imageinfo && p.imageinfo[0]; if (!ii) return; var src = ii.thumburl || ii.url; if (!src || !/^https:\/\//i.test(src) || !/\.(jpe?g|png|webp)(\?|$)/i.test(src)) return; var m = ii.extmetadata || {};
+          items.push({ u: src, t: nettoie(p.title.replace(/^File:/, '').replace(/\.[a-z]+$/i, '')) || q, a: nettoie(m.Artist && m.Artist.value) || 'auteur non indiqué', l: nettoie(m.LicenseShortName && m.LicenseShortName.value) || 'voir la fiche source' }); });
+        items = items.filter(function(it,i,all){return all.findIndex(function(x){return x.u===it.u;})===i;}).slice(0, 8);
+        if (!items.length) throw new Error('Aucune image exploitable');
+        try { localStorage.setItem('educ_gal2', JSON.stringify({ items: items, updated: Date.now() })); } catch (e) {} afficherGal(gal, gc, items);
+      }).catch(function () { if (cache && cache.items && cache.items.length) { afficherGal(gal, gc, cache.items); gc.textContent='Photographies enregistrées sur cet appareil · connexion indisponible pour actualiser.'; } else gc.textContent = 'Les photos ne sont pas disponibles pour le moment. Vérifie ta connexion puis actualise.'; });
     }
 
     /* ---------- Bouton d'entrée (même style que les cartes de l'application) ---------- */
