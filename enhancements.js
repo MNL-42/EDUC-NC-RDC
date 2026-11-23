@@ -67,7 +67,17 @@
     function render(){tabs.forEach(renderOne);}
     render();window.addEventListener('educ-progression-change',render);window.addEventListener('educ-pret',render);setTimeout(render,500);
   }
-  function init(){addLibrary();addBackupControls();addLearningChart();}
+  function cleanHome() {
+    var home=document.getElementById('tab-accueil');if(!home)return;
+    home.querySelectorAll('.educ-extra,.educ-learning-panel').forEach(function(node){node.remove();});
+    Array.prototype.slice.call(home.querySelectorAll('h2,h3,h4')).forEach(function(h){
+      var t=(h.textContent||'').toLowerCase();
+      if(t.indexOf('la rdc en images')!==-1||t.indexOf('mon suivi d’apprentissage')!==-1||t.indexOf('mon suivi d\'apprentissage')!==-1){
+        var card=h.closest('.educ-extra,.educ-learning-panel,.card,section');if(card&&home.contains(card))card.remove();
+      }
+    });
+  }
+  function init(){cleanHome();addLibrary();addBackupControls();addLearningChart();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
   window.addEventListener('educ-pret',init);
   setTimeout(init,1200);
