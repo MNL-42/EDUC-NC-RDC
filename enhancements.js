@@ -1,5 +1,5 @@
-/* EDUC National — modules complémentaires non intrusifs.
-   Galerie Commons avec crédits, synthèse apprenant et bibliothèque des PDF existants. */
+/* EDUC National — modules complémentaires dans leurs onglets dédiés.
+   Suivi d’apprentissage dans Quiz et Cours ; bibliothèque dans Cours ; sauvegarde dans Profil. */
 (function () {
   'use strict';
   var PROVINCES = ['Kinshasa','Kongo-Central','Kwango','Kwilu','Mai-Ndombe','Kasaï','Kasaï-Central','Kasaï-Oriental','Lomami','Sankuru','Maniema','Sud-Kivu','Nord-Kivu','Ituri','Tshopo','Bas-Uele','Haut-Uele','Nord-Ubangi','Sud-Ubangi','Mongala','Équateur','Tshuapa','Haut-Lomami','Lualaba','Haut-Katanga','Tanganyika'];
