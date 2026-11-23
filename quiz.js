@@ -69,6 +69,7 @@ try {
       const o = {}; ORDER.forEach(n => o[n] = [...vus[n]]); localStorage.setItem(cle('educ_vus3'), JSON.stringify(o));
       localStorage.setItem(cle('educ_xp'), String(userXP));
     } catch (e) {}
+    try { window.dispatchEvent(new Event('educ-progression-change')); } catch (e) {}
   };
 
   // Chaque identité (téléphone + nom) a sa propre progression : une nouvelle inscription repart de zéro
