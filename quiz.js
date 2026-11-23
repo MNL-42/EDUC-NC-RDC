@@ -69,6 +69,7 @@ try {
       const o = {}; ORDER.forEach(n => o[n] = [...vus[n]]); localStorage.setItem(cle('educ_vus3'), JSON.stringify(o));
       localStorage.setItem(cle('educ_xp'), String(userXP));
     } catch (e) {}
+    try { window.dispatchEvent(new Event('educ-progression-change')); } catch (e) {}
   };
 
   // Chaque identité (téléphone + nom) a sa propre progression : une nouvelle inscription repart de zéro
@@ -211,7 +212,7 @@ try {
 
   // Quand une personne s'inscrit ou se connecte, on charge SA progression (nouvelle identité = zéro)
   const orig = window.restaurerSessionDashboard;
-  if (typeof orig === 'function') window.restaurerSessionDashboard = function (u) { try { chargerEtat(u); } catch (e) {} const r = orig.apply(this, arguments); try { meta(); } catch (e) {} return r; };
+  if (typeof orig === 'function') window.restaurerSessionDashboard = function (u) { try { chargerEtat(u); window.dispatchEvent(new Event('educ-progression-change')); } catch (e) {} const r = orig.apply(this, arguments); try { meta(); } catch (e) {} return r; };
 
   window.QUIZ_STATS = { facile: POOL.facile.length, difficile: POOL.difficile.length, pro: POOL.pro.length };
   chargerEtat(); meta();
