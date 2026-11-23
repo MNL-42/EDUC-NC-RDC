@@ -38,6 +38,42 @@
       }catch(e){alert('Sauvegarde invalide ou illisible.');}finally{input.value='';}};reader.readAsText(file);});
     row.appendChild(out);row.appendChild(imp);card.appendChild(row);card.appendChild(input);tab.appendChild(card);
   }
+  function addLearningChart() {
+    var tabs = ['tab-quiz', 'tab-cours'];
+    var chartCss = '.educ-learning-panel{margin:16px 20px 20px;padding:16px;border:1px solid var(--border-color,#dbe5ef);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(239,246,255,.96));box-shadow:0 8px 24px rgba(15,45,85,.07)}.educ-learning-panel h3{margin:0 0 5px;font-size:1rem;font-weight:850;color:var(--text-dark,#123)}.educ-learning-panel>p{margin:0 0 13px;font-size:.76rem;line-height:1.45;color:var(--text-muted,#64748b)}.educ-learning-total{display:flex;align-items:baseline;gap:7px;margin:5px 0 14px}.educ-learning-total strong{font-size:1.65rem;line-height:1;font-weight:900;color:var(--primary-blue,#0066cc)}.educ-learning-total span{font-size:.76rem;color:var(--text-muted,#64748b)}.educ-level-row{margin:12px 0}.educ-level-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;font-size:.78rem}.educ-level-head strong{font-weight:800}.educ-level-state{font-size:.66rem;font-weight:800;padding:4px 8px;border-radius:20px;background:#e2e8f0;color:#475569;white-space:nowrap}.educ-level-state.started{background:#dbeafe;color:#1d4ed8}.educ-level-state.done{background:#dcfce7;color:#166534}.educ-level-track{height:10px;border-radius:20px;background:#e7edf5;overflow:hidden}.educ-level-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#0066cc,#36a3ff);width:0;transition:width .35s ease}.educ-level-foot{display:flex;justify-content:space-between;margin-top:5px;font-size:.68rem;color:var(--text-muted,#64748b)}.educ-learning-empty{padding:10px;border-radius:12px;background:#f1f5f9;color:#64748b;font-size:.76rem}';
+    if (!document.getElementById('educ-learning-chart-style')) { var style=document.createElement('style');style.id='educ-learning-chart-style';style.textContent=chartCss;document.head.appendChild(style); }
+    function renderOne(tabId) {
+      var tab=document.getElementById(tabId); if(!tab)return;
+      var panel=document.getElementById('educ-learning-'+tabId);
+      if(!panel){
+        panel=el('section','educ-learning-panel');panel.id='educ-learning-'+tabId;
+        panel.innerHTML='<h3>Mon suivi d’apprentissage</h3><p>Visualisez les questions déjà traitées et les niveaux parcourus dans le quiz.</p><div class="educ-learning-total"><strong class="educ-learning-done">0</strong><span class="educ-learning-total-label">question(s) traitée(s)</span></div><div class="educ-learning-levels"></div>';
+        var heading=tab.querySelector('.section-title')||tab.querySelector('h3');
+        if(heading&&heading.parentNode)heading.parentNode.insertBefore(panel,heading.nextSibling);else tab.insertBefore(panel,tab.firstChild);
+      }
+      var data=typeof window.educProgression==='function'?window.educProgression():null;
+      if(!data||!data.par)return;
+      panel.querySelector('.educ-learning-done').textContent=data.done||0;
+      panel.querySelector('.educ-learning-total-label').textContent='question(s) traitée(s) sur '+(data.total||0);
+      var levels=panel.querySelector('.educ-learning-levels');levels.innerHTML='';
+      var labels={facile:'Facile',difficile:'Difficile',pro:'Pro'};
+      ['facile','difficile','pro'].forEach(function(key){
+        var item=data.par[key]||{done:0,total:0},done=Number(item.done)||0,total=Number(item.total)||0,pct=total?Math.min(100,Math.round(done/total*100)):0;
+        var state=done>=200?'Niveau validé':done>0?'En cours':'À découvrir';
+        var row=el('div','educ-level-row'),head=el('div','educ-level-head');
+        head.appendChild(el('strong','',labels[key]));head.appendChild(el('span','educ-level-state'+(done>=200?' done':done>0?' started':''),state));
+        var track=el('div','educ-level-track'),fill=el('div','educ-level-fill');fill.style.width=pct+'%';track.appendChild(fill);
+        var foot=el('div','educ-level-foot');foot.appendChild(el('span','',done+' / '+total+' questions'));foot.appendChild(el('span','',pct+' %'));
+        row.appendChild(head);row.appendChild(track);row.appendChild(foot);levels.appendChild(row);
+      });
+      if(!data.total)levels.appendChild(el('div','educ-learning-empty','Votre progression apparaîtra ici dès votre première réponse au quiz.'));
+    }
+    function render(){tabs.forEach(renderOne);}
+    render();
+    window.addEventListener('educ-progression-change',render);
+    window.addEventListener('educ-pret',render);
+    setTimeout(render,500);
+  }
   function init(){addLibrary();addBackupControls();addLearningChart();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
   window.addEventListener('educ-pret',init);
