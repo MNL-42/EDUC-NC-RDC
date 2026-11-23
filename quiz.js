@@ -212,7 +212,7 @@ try {
 
   // Quand une personne s'inscrit ou se connecte, on charge SA progression (nouvelle identité = zéro)
   const orig = window.restaurerSessionDashboard;
-  if (typeof orig === 'function') window.restaurerSessionDashboard = function (u) { try { chargerEtat(u); } catch (e) {} const r = orig.apply(this, arguments); try { meta(); } catch (e) {} return r; };
+  if (typeof orig === 'function') window.restaurerSessionDashboard = function (u) { try { chargerEtat(u); window.dispatchEvent(new Event('educ-progression-change')); } catch (e) {} const r = orig.apply(this, arguments); try { meta(); } catch (e) {} return r; };
 
   window.QUIZ_STATS = { facile: POOL.facile.length, difficile: POOL.difficile.length, pro: POOL.pro.length };
   chargerEtat(); meta();
